@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Objects;
 import java.util.HashSet;
+import java.util.Random;
 
 public class Pacman extends JPanel implements ActionListener, KeyListener {
     @Override
@@ -105,6 +106,23 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
                 break;
             }
         }
+
+        for (Block ghost : ghosts) {
+            if (ghost.y == tileSize * 9 && ghost.direction != 'U' && ghost.direction != 'D') {
+                ghost.updateDirection('U');
+            }
+            ghost.x += ghost.velocityX;
+            ghost.y += ghost.velocityY;
+            for (Block wall : walls) {
+                if (collision(ghost, wall) || ghost.x <= 0 || ghost.x + ghost.width >= boardWidth) {
+                    ghost.x -= ghost.velocityX;
+                    ghost.y -= ghost.velocityY;
+                    char newDirection = directions[random.nextInt(4)];
+                    ghost.updateDirection(newDirection);
+                    break;
+                }
+            }
+        }
     }
     private final int rowCount = 21;
     private final int colCount = 19;
@@ -128,7 +146,11 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
     HashSet<Block> ghosts;
     Block pacman;
     Timer gameLoop;
-
+    char[] directions = {'U', 'D', 'L', 'R'};
+    Random random = new Random();
+    int score = 0;
+    int lives = 3;
+    boolean gameOver = false;
     //X = wall, O = skip, P = pac man, ' ' = food
     //Ghosts: b = blue, o = orange, p = pink, r = red
     private String[] tileMap = {
@@ -173,6 +195,10 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
         ghosts = new HashSet<Block>();
         foods = new HashSet<Block>();
         loadMap();
+        for (Block ghost : ghosts) {
+            char newDirection = directions[random.nextInt(4)];
+            ghost.updateDirection(newDirection);
+        }
         gameLoop = new Timer(50, this);
         gameLoop.start();
     }
