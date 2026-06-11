@@ -20,13 +20,22 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
-            pacman.direction = 'U';
+            pacman.updateDirection('U');
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            pacman.direction = 'D';
+            pacman.updateDirection('D');
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            pacman.direction = 'R';
+            pacman.updateDirection('R');
         } else {
-            pacman.direction = 'L';
+            pacman.updateDirection('L');
+        }
+        if (pacman.direction == 'U') {
+            pacman.image = pacmanUpImage;
+        } else if (pacman.direction == 'D') {
+            pacman.image = pacmanDownImage;
+        } else if (pacman.direction == 'R') {
+            pacman.image = pacmanRightImage;
+        } else {
+            pacman.image = pacmanLeftImage;
         }
     }
 
@@ -54,8 +63,19 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
         }
 
         void updateDirection(char direction) {
+            char prevDirection = this.direction;
             this.direction = direction;
             updateVelocity();
+            this.x += this.velocityX;
+            this.y += this.velocityY;
+            for (Block wall : walls) {
+                if (collision(this, wall)) {
+                    this.x -= this.velocityX;
+                    this.y -= this.velocityY;
+                    this.direction = prevDirection;
+                    updateVelocity();
+                }
+            }
         }
 
         private void updateVelocity() {
@@ -77,6 +97,14 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
     public void move() {
         pacman.x += pacman.velocityX;
         pacman.y += pacman.velocityY;
+
+        for (Block wall : walls) {
+            if (collision(pacman, wall)) {
+                pacman.x -= pacman.velocityX;
+                pacman.y -= pacman.velocityY;
+                break;
+            }
+        }
     }
     private final int rowCount = 21;
     private final int colCount = 19;
@@ -197,5 +225,8 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
         for (Block food : foods) {
             g.fillRect(food.x, food.y, food.width, food.height);
         }
+    }
+    public boolean collision(Block a, Block b) {
+        return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
     }
 }
