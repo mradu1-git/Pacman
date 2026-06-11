@@ -4,7 +4,23 @@ import java.awt.event.*;
 import java.util.Objects;
 import java.util.HashSet;
 
-public class Pacman extends JPanel {
+public class Pacman extends JPanel implements ActionListener, KeyListener {
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {}
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {}
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+        System.out.println();
+    }
+
     class Block {
         int x;
         int y;
@@ -14,6 +30,9 @@ public class Pacman extends JPanel {
 
         int startX;
         int startY;
+        char direction = 'U';
+        int velocityX = 0;
+        int velocityY = 0;
 
         public Block(int x, int y, int width, int height, Image image) {
             this.x = x;
@@ -23,6 +42,27 @@ public class Pacman extends JPanel {
             this.image = image;
             this.startX = x;
             this.startY = y;
+        }
+
+        void updateDirection(char direction) {
+            this.direction = direction;
+            updateVelocity();
+        }
+
+        private void updateVelocity() {
+            if (this.direction == 'U') {
+                this.velocityX = 0;
+                this.velocityY = -1;
+            } else if (this.direction == 'D') {
+                this.velocityX = 0;
+                this.velocityY = 1;
+            } else if (this.direction == 'R') {
+                this.velocityX = 1;
+                this.velocityY = 0;
+            } else {
+                this.velocityY = 0;
+                this.velocityX = -1;
+            }
         }
     }
     private final int rowCount = 21;
@@ -46,6 +86,7 @@ public class Pacman extends JPanel {
     HashSet<Block> foods;
     HashSet<Block> ghosts;
     Block pacman;
+    Timer gameLoop;
 
     //X = wall, O = skip, P = pac man, ' ' = food
     //Ghosts: b = blue, o = orange, p = pink, r = red
@@ -76,7 +117,8 @@ public class Pacman extends JPanel {
     Pacman() {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         setBackground(Color.BLACK);
-
+        addKeyListener(this);
+        setFocusable(true);
         wallImage = new ImageIcon((getClass().getResource("./Images/wall.png"))).getImage();
         blueGhostImage = new ImageIcon((getClass().getResource("./Images/blueGhost.png"))).getImage();
         orangeGhostImage = new ImageIcon((getClass().getResource("./Images/orangeGhost.png"))).getImage();
@@ -90,6 +132,8 @@ public class Pacman extends JPanel {
         ghosts = new HashSet<Block>();
         foods = new HashSet<Block>();
         loadMap();
+        gameLoop = new Timer(50, this);
+        gameLoop.start();
     }
 
     public void loadMap() {
@@ -121,6 +165,24 @@ public class Pacman extends JPanel {
                     foods.add(food);
                 }
             }
+        }
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        draw(g);
+    }
+    public void draw(Graphics g) {
+        g.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height, null);
+        for (Block ghost : ghosts) {
+            g.drawImage(ghost.image, ghost.x, ghost.y, ghost.width, ghost.height, null);
+        }
+        for (Block wall: walls) {
+            g.drawImage(wall.image, wall.x, wall.y, wall.width, wall.height, null);
+        }
+        g.setColor(Color.WHITE);
+        for (Block food : foods) {
+            g.fillRect(food.x, food.y, food.width, food.height);
         }
     }
 }

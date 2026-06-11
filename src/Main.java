@@ -12,6 +12,7 @@ public class Main {
 
         frame.setLocationRelativeTo(null); // Keep this AFTER pack() so it centers correctly
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pacmanGame.requestFocus();
         frame.setVisible(true);
     }
 }
