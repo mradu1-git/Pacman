@@ -45,7 +45,7 @@ public class Pacman extends JPanel {
     HashSet<Block> walls;
     HashSet<Block> foods;
     HashSet<Block> ghosts;
-    Block Pacman;
+    Block pacman;
 
     //X = wall, O = skip, P = pac man, ' ' = food
     //Ghosts: b = blue, o = orange, p = pink, r = red
@@ -77,16 +77,50 @@ public class Pacman extends JPanel {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         setBackground(Color.BLACK);
 
-        wallImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/wall.png"))).getImage();
-        blueGhostImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/blueGhost.png"))).getImage();
-        orangeGhostImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/orangeGhost.png"))).getImage();
-        redGhostImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/redGhost.png"))).getImage();
-        pinkGhostImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/pinkGhost.png"))).getImage();
-        pacmanUpImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/pacmanUp.png"))).getImage();
-        pacmanDownImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/pacmanDown.png"))).getImage();
-        pacmanLeftImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/pacmanLeft.png"))).getImage();
-        pacmanRightImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("./Images/pacmanRight.png"))).getImage();
-
+        wallImage = new ImageIcon((getClass().getResource("./Images/wall.png"))).getImage();
+        blueGhostImage = new ImageIcon((getClass().getResource("./Images/blueGhost.png"))).getImage();
+        orangeGhostImage = new ImageIcon((getClass().getResource("./Images/orangeGhost.png"))).getImage();
+        redGhostImage = new ImageIcon((getClass().getResource("./Images/redGhost.png"))).getImage();
+        pinkGhostImage = new ImageIcon((getClass().getResource("./Images/pinkGhost.png"))).getImage();
+        pacmanUpImage = new ImageIcon((getClass().getResource("./Images/pacmanUp.png"))).getImage();
+        pacmanDownImage = new ImageIcon((getClass().getResource("./Images/pacmanDown.png"))).getImage();
+        pacmanLeftImage = new ImageIcon((getClass().getResource("./Images/pacmanLeft.png"))).getImage();
+        pacmanRightImage = new ImageIcon((getClass().getResource("./Images/pacmanRight.png"))).getImage();
+        walls = new HashSet<Block>();
+        ghosts = new HashSet<Block>();
+        foods = new HashSet<Block>();
+        loadMap();
     }
 
+    public void loadMap() {
+        for (int r = 0; r < rowCount; r++) {
+            for (int c = 0; c < colCount; c++) {
+                String row = tileMap[r];
+                char dec = row.charAt(c);
+                int x = c * tileSize;
+                int y = r * tileSize;
+                if (dec == 'X') {
+                    Block wall = new Block(x, y, tileSize, tileSize, wallImage);
+                    walls.add(wall);
+                } else if (dec == 'b') {
+                    Block blueGhost = new Block(x, y, tileSize, tileSize, blueGhostImage);
+                    ghosts.add(blueGhost);
+                }  else if (dec == 'o') {
+                    Block blueGhost = new Block(x, y, tileSize, tileSize, orangeGhostImage);
+                    ghosts.add(blueGhost);
+                }  else if (dec == 'r') {
+                    Block blueGhost = new Block(x, y, tileSize, tileSize, redGhostImage);
+                    ghosts.add(blueGhost);
+                }  else if (dec == 'p') {
+                    Block blueGhost = new Block(x, y, tileSize, tileSize, pinkGhostImage);
+                    ghosts.add(blueGhost);
+                } else if (dec == 'P') {
+                    pacman = new Block(x, y, tileSize, tileSize, pacmanRightImage );
+                } else {
+                    Block food = new Block(x + 14, y + 14, 4, 4, null);
+                    foods.add(food);
+                }
+            }
+        }
+    }
 }

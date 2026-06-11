@@ -1,18 +1,17 @@
 import javax.swing.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception{
-        int rowCount = 21;
-        int colCount = 19;
-        int tileSize = 32;
-        int boardWidth = colCount * tileSize;
-        int boardHeight = rowCount * tileSize;
-
+    public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame("Pac Man");
-        frame.setSize(boardWidth, boardHeight);
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
+
+        Pacman pacmanGame = new Pacman();
+        frame.add(pacmanGame);
+
         frame.setResizable(false);
+        frame.pack(); // <--- Add this instead of frame.setSize()
+
+        frame.setLocationRelativeTo(null); // Keep this AFTER pack() so it centers correctly
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 }
