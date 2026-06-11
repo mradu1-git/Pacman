@@ -7,6 +7,7 @@ import java.util.HashSet;
 public class Pacman extends JPanel implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        move();
         repaint();
     }
 
@@ -17,8 +18,16 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent keyEvent) {}
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
-        System.out.println();
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            pacman.direction = 'U';
+        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            pacman.direction = 'D';
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            pacman.direction = 'R';
+        } else {
+            pacman.direction = 'L';
+        }
     }
 
     class Block {
@@ -52,18 +61,22 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
         private void updateVelocity() {
             if (this.direction == 'U') {
                 this.velocityX = 0;
-                this.velocityY = -1;
+                this.velocityY = -tileSize/4;
             } else if (this.direction == 'D') {
                 this.velocityX = 0;
-                this.velocityY = 1;
+                this.velocityY = tileSize/4;
             } else if (this.direction == 'R') {
-                this.velocityX = 1;
+                this.velocityX = tileSize/4;
                 this.velocityY = 0;
             } else {
                 this.velocityY = 0;
-                this.velocityX = -1;
+                this.velocityX = -tileSize/4;
             }
         }
+    }
+    public void move() {
+        pacman.x += pacman.velocityX;
+        pacman.y += pacman.velocityY;
     }
     private final int rowCount = 21;
     private final int colCount = 19;
