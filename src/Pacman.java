@@ -23,6 +23,14 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if (gameOver) {
+            loadMap();
+            resetPositions();
+            lives = 3;
+            score = 0;
+            gameOver = false;
+            gameLoop.start();
+        }
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             pacman.updateDirection('U');
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
