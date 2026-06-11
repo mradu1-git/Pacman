@@ -10,6 +10,9 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
     public void actionPerformed(ActionEvent actionEvent) {
         move();
         repaint();
+        if (gameOver) {
+            gameLoop.stop();
+        }
     }
 
     @Override
@@ -94,6 +97,10 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
                 this.velocityX = -tileSize/4;
             }
         }
+        void reset() {
+            this.x = this.startX;
+            this.y = this.startY;
+        }
     }
     public void move() {
         pacman.x += pacman.velocityX;
@@ -108,6 +115,13 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
         }
 
         for (Block ghost : ghosts) {
+            if (collision(ghost, pacman)) {
+                lives--;
+                if (lives == 0) {
+                    gameOver = true;
+                }
+                resetPositions();
+            }
             if (ghost.y == tileSize * 9 && ghost.direction != 'U' && ghost.direction != 'D') {
                 ghost.updateDirection('U');
             }
@@ -123,7 +137,27 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
                 }
             }
         }
+        Block foodEaten = null;
+        for (Block food : foods) {
+            if (collision(pacman, food)) {
+                foodEaten = food;
+                score += 10;
+            }
+        }
+        foods.remove(foodEaten);
     }
+
+    private void resetPositions() {
+        pacman.reset();
+        pacman.velocityX = 0;
+        pacman.velocityY = 0;
+        for (Block ghost : ghosts) {
+            ghost.reset();
+            char newDirection = directions[random.nextInt(4)];
+            ghost.updateDirection(newDirection);
+        }
+    }
+
     private final int rowCount = 21;
     private final int colCount = 19;
     private final int tileSize = 32;
@@ -250,6 +284,12 @@ public class Pacman extends JPanel implements ActionListener, KeyListener {
         g.setColor(Color.WHITE);
         for (Block food : foods) {
             g.fillRect(food.x, food.y, food.width, food.height);
+        }
+        g.setFont(new Font("Arial", Font.PLAIN, 18));
+        if (gameOver) {
+            g.drawString("Game Over" + String.valueOf(score), tileSize/2, tileSize/2);
+        } else {
+            g.drawString("Lives" + String.valueOf(lives) + "Score: " + String.valueOf(score), tileSize/ 2, tileSize /2);
         }
     }
     public boolean collision(Block a, Block b) {
